@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal Farmasi Sanden</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d9488; /* Teal Medis */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --header-height: 64px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* --- Header --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 12px;
+        }
+
+        #btn-back {
+            display: none;
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            color: var(--primary-color);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        #btn-back:active {
+            background: #f1f5f9;
+        }
+
+        .portal-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        /* --- Menu Grid --- */
+        .container {
+            margin-top: var(--header-height);
+            padding: 24px 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: var(--transition);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .menu-card {
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-card:active {
+            transform: scale(0.95);
+            background: #fdfdfd;
+            border-color: var(--primary-color);
+        }
+
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .menu-card span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        /* --- Iframe Area --- */
+        #app-container {
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            width: 100%;
+            height: calc(100vh - var(--header-height));
+            background: #fff;
+            display: none;
+            z-index: 900;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- Loader --- */
+        .loader-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 901;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Fade Animation */
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Desktop */
+        @media (min-width: 600px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <button id="btn-back" onclick="closeApp()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <span class="portal-title" id="title-text">Farmasi Sanden</span>
+        </div>
+    </header>
+
+    <div class="container" id="home-screen">
+        <div class="menu-grid">
+            <!-- Menu Item 1 -->
+            <div class="menu-card" onclick="openApp('MedBag Control', 'https://script.google.com/macros/s/AKfycbw8b3e4IJsx5c9e9mMRXmuv7Bc9UsgeNwlsGREif9__txqgLnL15sODwRfaifOLGQJQuw/exec')">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </div>
+                <span>MedBag Control</span>
+            </div>
+
+            <!-- Menu Item 2 -->
+            <div class="menu-card" onclick="openApp('Supervisi Farmasi', 'https://script.google.com/macros/s/AKfycbzk9_H19N7w5zWBhgnFOw9ZshUWulrd0lubMQY2GtQ2gxHBXcSzQBjDL5UwczapIe9j/exec')">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
+                <span>Supervisi Farmasi</span>
+            </div>
+
+            <!-- Menu Item 3 -->
+            <div class="menu-card" onclick="openApp('Farmasi Unit', 'https://script.google.com/macros/s/AKfycbx68IbwadvN9hdoW6kQtCMZGzpxeQfjXXtJ-VXEMP9RQx-QcprYfEaXimhdUxRn_S7WeQ/exec')">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M3 9h18"/></svg>
+                </div>
+                <span>Farmasi Unit</span>
+            </div>
+
+            <!-- Menu Item 4 -->
+            <div class="menu-card" onclick="openApp('PshycoKey', 'https://script.google.com/macros/s/AKfycbz_70j8eUoMAzaX0FSR0h_z5VSC0Zr7XfAHglyohBoWTmm6tRiYuaoMur-VW21v7RpGmg/exec')">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="3"/><path d="M10.8 12.2 14 9l2.5 2.5"/><path d="M14 9l4-4L22 9"/><path d="M18 5l3 3"/></svg>
+                </div>
+                <span>PshycoKey</span>
+            </div>
+
+            <!-- Menu Item 5 -->
+            <div class="menu-card" onclick="openApp('Monitoring Suhu', 'https://script.google.com/macros/s/AKfycbzRhcVuXB1IcwYQLl8VXVzAcXom0aGQV0efPyOjKkw8VbCjfNVcMthFW8OkEwyUfs_-HA/exec')">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
+                </div>
+                <span>Monitoring Suhu</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Iframe Wrapper -->
+    <div id="app-container">
+        <div id="loader" class="loader-wrapper">
+            <div class="spinner"></div>
+            <p class="loader-text">Memuat aplikasi...</p>
+        </div>
+        <iframe id="app-frame" src="" onload="hideLoader()"></iframe>
+    </div>
+
+    <script>
+        const homeScreen = document.getElementById('home-screen');
+        const appContainer = document.getElementById('app-container');
+        const appFrame = document.getElementById('app-frame');
+        const loader = document.getElementById('loader');
+        const btnBack = document.getElementById('btn-back');
+        const titleText = document.getElementById('title-text');
+        const mainTitle = "Farmasi Sanden";
+
+        function openApp(name, url) {
+            // Tampilkan Header State
+            titleText.innerText = name;
+            btnBack.style.display = 'block';
+            
+            // Tampilkan Container & Loader
+            appContainer.style.display = 'block';
+            homeScreen.style.display = 'none';
+            loader.style.display = 'flex';
+            
+            // Set URL Iframe
+            appFrame.src = url;
+            
+            // Kunci scroll body
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideLoader() {
+            // Dipanggil saat iframe selesai load
+            if (appFrame.src !== "") {
+                loader.style.display = 'none';
+                appFrame.classList.add('fade-in');
+            }
+        }
+
+        function closeApp() {
+            // Reset Header
+            titleText.innerText = mainTitle;
+            btnBack.style.display = 'none';
+            
+            // Sembunyikan Iframe
+            appContainer.style.display = 'none';
+            homeScreen.style.display = 'block';
+            homeScreen.classList.add('fade-in');
+            
+            // Hapus URL agar hemat resource
+            appFrame.src = "";
+            
+            // Kembalikan scroll body
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>
